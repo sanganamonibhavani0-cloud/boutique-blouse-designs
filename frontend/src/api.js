@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const API_ORIGIN = import.meta.env.VITE_API_URL || "";
-
 export const api = axios.create({
-  baseURL: API_ORIGIN ? `${API_ORIGIN}/api` : "/api",
+  baseURL: import.meta.env.VITE_API_URL || "/api"
 });
 
 export function imageUrl(path) {
@@ -13,13 +11,11 @@ export function imageUrl(path) {
     return path;
   }
 
-  return API_ORIGIN ? `${API_ORIGIN}${path}` : path;
+  const baseUrl = import.meta.env.VITE_API_URL || "";
+  return `${baseUrl}${path}`;
 }
 
 export function adminHeaders() {
   const token = localStorage.getItem("adminToken");
-
-  return token
-    ? { "X-Admin-Token": token }
-    : {};
+  return token ? { "X-Admin-Token": token } : {};
 }
