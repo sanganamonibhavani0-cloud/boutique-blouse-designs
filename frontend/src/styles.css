@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #302329;
+  background: #fffaf9;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.navbar {
+  height: 72px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6%; background: rgba(255,250,249,.96); border-bottom: 1px solid #f0dfe0;
+  position: sticky; top: 0; z-index: 10;
+}
+.brand { font-family: "Playfair Display"; font-size: 25px; font-weight: 700; }
+nav { display:flex; gap:24px; font-weight:600; }
+main { max-width: 1200px; margin:auto; padding: 35px 6%; }
+.hero {
+  min-height: 470px; display:grid; grid-template-columns: 1.25fr .75fr; align-items:center;
+  border-radius: 28px; padding: 70px; overflow:hidden;
+  background: radial-gradient(circle at 75% 35%, #f8dfe1, #f3e8e4 40%, #ead6d4);
+}
+.hero h1 { font: 700 54px/1.05 "Playfair Display"; max-width:700px; margin: 15px 0; }
+.hero p { max-width:600px; font-size:18px; line-height:1.7; color:#66585c; }
+.eyebrow { letter-spacing:3px; font-size:12px; font-weight:700; }
+.hero-art { font-size:240px; text-align:center; opacity:.25; }
+.primary-btn, .secondary-btn, button {
+  border:0; border-radius:12px; padding:12px 17px; cursor:pointer; font-weight:700;
+}
+.primary-btn { background:#5b2938; color:white; display:inline-block; }
+.secondary-btn { background:#f2e4e5; display:inline-block; margin-left:8px; }
+.toolbar { display:flex; gap:10px; margin-top:40px; }
+.toolbar input { flex:1; }
+input, textarea, select {
+  width:100%; padding:14px; border:1px solid #decfd0; border-radius:12px;
+  background:white; font:inherit;
+}
+.categories { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 30px; }
+.chip { background:#f2e8e8; color:#5b2938; }
+.chip.active { background:#5b2938; color:#fff; }
+.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.card { background:white; border:1px solid #efdfdf; border-radius:20px; overflow:hidden; cursor:pointer; transition:.2s; }
+.card:hover { transform:translateY(-4px); box-shadow:0 15px 35px #4b263010; }
+.card img { width:100%; aspect-ratio:4/5; object-fit:cover; background:#f4eded; }
+.card-body { padding:18px; }
+.tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#8c5362; }
+.card h3 { margin:8px 0; }
+.price, .big-price { font-weight:800; color:#5b2938; font-size:20px; }
+.actions { display:flex; gap:7px; }
+.actions button { background:#f6eeee; padding:9px 10px; font-size:12px; }
+.center, .empty { text-align:center; padding:70px; }
+.details { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
+.details > img { width:100%; max-height:700px; object-fit:cover; border-radius:24px; }
+.details h1 { font:700 48px "Playfair Display"; }
+.big-price { font-size:32px; margin:20px 0; }
+.admin-page h1, .login-card h1 { font-family:"Playfair Display"; }
+.admin-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; }
+.admin-form, .login-card { background:white; border:1px solid #efdfdf; border-radius:20px; padding:25px; display:grid; gap:14px; margin-bottom:45px; }
+.admin-form textarea { min-height:100px; resize:vertical; }
+.admin-row { display:grid; grid-template-columns:80px 1fr auto auto; gap:15px; align-items:center; padding:12px; background:white; border:1px solid #efdfdf; border-radius:14px; margin:10px 0; }
+.admin-row img { width:70px; height:70px; object-fit:cover; border-radius:10px; }
+.danger { background:#f8dede; color:#8c2730; }
+.login-page { max-width:500px; }
+.login-card { margin-top:70px; }
+.login-card small { color:#777; }
+footer { text-align:center; padding:40px; border-top:1px solid #f0dfe0; color:#78696d; margin-top:50px; }
+
+@media (max-width: 850px) {
+  .hero { grid-template-columns:1fr; padding:40px; }
+  .hero h1 { font-size:42px; }
+  .hero-art { display:none; }
+  .grid { grid-template-columns:repeat(2,1fr); }
+  .details { grid-template-columns:1fr; }
+  .admin-row { grid-template-columns:60px 1fr; }
+  .admin-row button { grid-column:2; }
+}
+@media (max-width: 550px) {
+  .grid { grid-template-columns:1fr; }
+  .hero { padding:28px; }
+  .hero h1 { font-size:36px; }
+  nav { gap:10px; }
+  main { padding:25px 4%; }
+}
