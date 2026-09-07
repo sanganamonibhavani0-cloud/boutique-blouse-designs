@@ -19,7 +19,7 @@ app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
-ADMIN_EMAIL = "bhavani@gmail.com"
+ADMIN_EMAIL = "bhavani@example.com"
 ADMIN_PASSWORD = "navya"
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
