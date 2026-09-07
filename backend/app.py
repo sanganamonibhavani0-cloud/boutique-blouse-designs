@@ -20,7 +20,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
 ADMIN_EMAIL = "bhavani@example.com"
-ADMIN_PASSWORD = "navya"
+ADMIN_PASSWORD = "navya123"
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
