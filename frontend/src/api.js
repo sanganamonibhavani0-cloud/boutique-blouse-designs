@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const BACKEND_URL = "https://boutique-blouse-designs-api.onrender.com";
+
 const API_BASE_URL = import.meta.env.DEV
   ? "/api"
-  : "https://boutique-blouse-designs-api.onrender.com";
+  : `${BACKEND_URL}/api`;
 
 export const api = axios.create({
   baseURL: API_BASE_URL
@@ -15,7 +17,7 @@ export function imageUrl(path) {
     return path;
   }
 
-  return `${API_BASE_URL}${path}`;
+  return `${BACKEND_URL}${path}`;
 }
 
 export function adminHeaders() {
