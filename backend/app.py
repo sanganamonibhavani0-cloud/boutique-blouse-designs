@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory,redirect
 import cloudinary
 import cloudinary.uploader
 from flask_cors import CORS
@@ -129,14 +129,13 @@ def download_design(design_id):
     design = db.session.get(Design, design_id)
     if not design:
         return jsonify({"error": "Design not found"}), 404
+    if not design.image_filename:
+        return jsonify({"error": "Image not found"}), 404
+
+
     design.downloads += 1
     db.session.commit()
-    return send_from_directory(
-        UPLOAD_DIR,
-        design.image_filename,
-        as_attachment=True,
-        download_name=design.image_filename
-    )
+    return redirect(design.image_filename)
 
 @app.post("/api/admin/designs")
 @admin_required
