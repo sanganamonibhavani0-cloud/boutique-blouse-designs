@@ -52,7 +52,7 @@ class Design(db.Model):
             "description": self.description,
             "category": self.category,
             "price": self.price,
-            "image_url": f"/uploads/{self.image_filename}",
+            "image_url": self.image_filename if self.image_filename.startswith("http") else f"/uploads/{self.image_filename}",
             "likes": self.likes,
             "downloads": self.downloads,
             "created_at": self.created_at.isoformat() if self.created_at else None,
