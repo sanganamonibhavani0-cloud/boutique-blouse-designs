@@ -76,6 +76,7 @@ function Home() {
 
 function DesignCard({ design }) {
   const [likes, setLikes] = useState(design.likes);
+  const [downloads, setDownloads] = useState(design.downloads);
   const navigate = useNavigate();
 
   async function like(e) {
@@ -83,17 +84,27 @@ function DesignCard({ design }) {
     const { data } = await api.post(`/designs/${design.id}/like`);
     setLikes(data.likes);
   }
-
   async function download(e) {
-    e.preventDefault();
-    const response = await api.post(`/designs/${design.id}/download`, {}, { responseType: "blob" });
-    const url = URL.createObjectURL(response.data);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${design.title}.jpg`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  e.preventDefault();
+
+  const response = await api.post(
+    `/designs/${design.id}/download`,
+    {},
+    { responseType: "blob" }
+  );
+
+  const url = URL.createObjectURL(response.data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${design.title}.jpg`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  setDownloads(prev => prev + 1);
+}
+  
 
   async function share(e) {
     e.preventDefault();
@@ -114,7 +125,7 @@ function DesignCard({ design }) {
         <p className="price">₹{Number(design.price).toLocaleString("en-IN")}</p>
         <div className="actions">
           <button onClick={like}>♥ {likes}</button>
-          <button onClick={download}>↓ Download</button>
+          <button onClick={download}>↓ Download {downloads}</button>
           <button onClick={share}>↗ Share</button>
         </div>
       </div>
