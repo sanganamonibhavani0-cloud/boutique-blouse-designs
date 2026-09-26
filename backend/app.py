@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
+import cloudinary
+import cloudinary.uploader
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
@@ -12,6 +14,11 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 app = Flask(__name__)
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR / 'boutique.db'}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
@@ -151,10 +158,12 @@ def create_design():
     except ValueError:
         return jsonify({"error": "Invalid price"}), 400
 
-    ext = image.filename.rsplit(".", 1)[1].lower()
-    filename = f"{uuid.uuid4().hex}.{ext}"
-    image.save(UPLOAD_DIR / filename)
+    upload_result = cloudinary.uploader.upload(
+        image,
+        folder="boutique_blouse_designs"
+    )
 
+    filename = upload_result["secure_url"]
     design = Design(
         title=title,
         slug=make_slug(title),
@@ -190,15 +199,14 @@ def update_design(design_id):
     image = request.files.get("image")
     if image and image.filename:
         if not allowed_file(image.filename):
-            return jsonify({"error": "Invalid image type"}), 400
-        old_path = UPLOAD_DIR / design.image_filename
-        if old_path.exists():
-            old_path.unlink()
-        ext = image.filename.rsplit(".", 1)[1].lower()
-        filename = f"{uuid.uuid4().hex}.{ext}"
-        image.save(UPLOAD_DIR / filename)
-        design.image_filename = filename
+           return jsonify({"error": "Invalid image type"}), 400
 
+        upload_result = cloudinary.uploader.upload(
+            image,
+            folder="boutique_blouse_designs"
+        )
+
+        design.image_filename = upload_result["secure_url"]
     db.session.commit()
     return jsonify(design.to_dict())
 
@@ -209,9 +217,6 @@ def delete_design(design_id):
     if not design:
         return jsonify({"error": "Design not found"}), 404
 
-    image_path = UPLOAD_DIR / design.image_filename
-    if image_path.exists():
-        image_path.unlink()
 
     db.session.delete(design)
     db.session.commit()
