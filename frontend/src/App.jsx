@@ -1,8 +1,17 @@
+
 import React, { useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { api, adminHeaders } from "./api";
 
-const categories = ["All", "Bridal", "Wedding", "Party Wear", "Embroidery", "Designer", "Simple"];
+const categories = [
+  "All",
+  "Bridal",
+  "Wedding",
+  "Party Wear",
+  "Embroidery",
+  "Designer",
+  "Simple"
+];
 
 function Layout({ children }) {
   return (
@@ -14,8 +23,12 @@ function Layout({ children }) {
           <Link to="/admin">Admin</Link>
         </nav>
       </header>
+
       {children}
-      <footer>© {new Date().getFullYear()} Blouse Studio · Beautiful designs for every occasion</footer>
+
+      <footer>
+        © {new Date().getFullYear()} Blouse Studio · Beautiful designs for every occasion
+      </footer>
     </>
   );
 }
@@ -27,13 +40,22 @@ function Home() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    setLoading(true);
-    const { data } = await api.get("/designs", { params: { search, category } });
-    setDesigns(data);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const { data } = await api.get("/designs", {
+        params: { search, category }
+      });
+      setDesigns(data);
+    } catch (error) {
+      console.error("Unable to load designs:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  useEffect(() => { load(); }, [category]);
+  useEffect(() => {
+    load();
+  }, [category]);
 
   return (
     <main>
@@ -41,7 +63,10 @@ function Home() {
         <div>
           <span className="eyebrow">BOUTIQUE COLLECTION</span>
           <h1>Beautiful Blouse Designs for Every Occasion</h1>
-          <p>Explore designer, bridal, embroidery and wedding blouse inspirations with current prices.</p>
+          <p>
+            Explore designer, bridal, embroidery and wedding blouse
+            inspirations with current prices.
+          </p>
           <a href="#designs" className="primary-btn">Explore Designs</a>
         </div>
         <div className="hero-art">✿</div>
@@ -59,17 +84,29 @@ function Home() {
 
       <div className="categories">
         {categories.map(c => (
-          <button className={category === c ? "chip active" : "chip"} key={c} onClick={() => setCategory(c)}>
+          <button
+            className={category === c ? "chip active" : "chip"}
+            key={c}
+            onClick={() => setCategory(c)}
+          >
             {c}
           </button>
         ))}
       </div>
 
-      {loading ? <p className="center">Loading designs...</p> :
-       designs.length === 0 ? <div className="empty">No designs found. Admin can add the first design.</div> :
-       <section className="grid">
-        {designs.map(d => <DesignCard key={d.id} design={d} />)}
-       </section>}
+      {loading ? (
+        <p className="center">Loading designs...</p>
+      ) : designs.length === 0 ? (
+        <div className="empty">
+          No designs found. Admin can add the first design.
+        </div>
+      ) : (
+        <section className="grid">
+          {designs.map(d => (
+            <DesignCard key={d.id} design={d} />
+          ))}
+        </section>
+      )}
     </main>
   );
 }
@@ -81,48 +118,85 @@ function DesignCard({ design }) {
 
   async function like(e) {
     e.preventDefault();
-    const { data } = await api.post(`/designs/${design.id}/like`);
-    setLikes(data.likes);
+    e.stopPropagation();
+
+    try {
+      const { data } = await api.post(`/designs/${design.id}/like`);
+      setLikes(data.likes);
+    } catch (error) {
+      alert("Unable to like this design.");
+    }
   }
+
   async function download(e) {
-  e.preventDefault();
+    e.preventDefault();
+    e.stopPropagation();
 
-  const response = await api.post(
-    `/designs/${design.id}/download`,
-    {},
-    { responseType: "blob" }
-  );
+    try {
+      const response = await api.post(
+        `/designs/${design.id}/download`,
+        {},
+        { responseType: "blob" }
+      );
 
-  const url = URL.createObjectURL(response.data);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${design.title}.jpg`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(response.data);
+      const a = document.createElement("a");
 
-  setDownloads(prev => prev + 1);
-}
-  
+      a.href = url;
+      a.download = `${design.title}.jpg`;
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
+      setDownloads(prev => prev + 1);
+    } catch (error) {
+      alert("Download failed. Please try again.");
+    }
+  }
 
   async function share(e) {
     e.preventDefault();
+    e.stopPropagation();
+
     const url = `${window.location.origin}/design/${design.slug}`;
-    if (navigator.share) await navigator.share({ title: design.title, url });
-    else {
-      await navigator.clipboard.writeText(url);
-      alert("Design link copied!");
+    const shareText = `${design.title}\n${url}`;
+
+    try {
+      if (window.AndroidShare?.shareText) {
+        window.AndroidShare.shareText(shareText);
+      } else if (navigator.share) {
+        await navigator.share({
+          title: design.title,
+          text: design.title,
+          url
+        });
+      } else {
+        alert("Sharing is not supported on this device.");
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        alert("Sharing failed. Please try again.");
+      }
     }
   }
 
   return (
-    <article className="card" onClick={() => navigate(`/design/${design.slug}`)}>
+    <article
+      className="card"
+      onClick={() => navigate(`/design/${design.slug}`)}
+    >
       <img src={design.image_url} alt={design.title} />
+
       <div className="card-body">
         <span className="tag">{design.category}</span>
         <h3>{design.title}</h3>
-        <p className="price">₹{Number(design.price).toLocaleString("en-IN")}</p>
+
+        <p className="price">
+          ₹{Number(design.price).toLocaleString("en-IN")}
+        </p>
+
         <div className="actions">
           <button onClick={like}>♥ {likes}</button>
           <button onClick={download}>↓ Download {downloads}</button>
@@ -138,72 +212,144 @@ function DesignDetails() {
   const [design, setDesign] = useState(null);
 
   useEffect(() => {
-    api.get(`/designs/${slug}`).then(r => setDesign(r.data)).catch(() => setDesign(false));
+    api.get(`/designs/${slug}`)
+      .then(r => setDesign(r.data))
+      .catch(() => setDesign(false));
   }, [slug]);
 
-  if (design === null) return <p className="center">Loading...</p>;
-  if (!design) return <p className="center">Design not found.</p>;
+  if (design === null) {
+    return <p className="center">Loading...</p>;
+  }
+
+  if (!design) {
+    return <p className="center">Design not found.</p>;
+  }
 
   return (
     <main className="details">
       <img src={design.image_url} alt={design.title} />
+
       <div>
         <span className="tag">{design.category}</span>
         <h1>{design.title}</h1>
-        <div className="big-price">₹{Number(design.price).toLocaleString("en-IN")}</div>
+
+        <div className="big-price">
+          ₹{Number(design.price).toLocaleString("en-IN")}
+        </div>
+
         <p>{design.description}</p>
         <p>♥ {design.likes} likes · ↓ {design.downloads} downloads</p>
-        <Link to="/" className="secondary-btn">← Back to designs</Link>
+
+        <Link to="/" className="secondary-btn">
+          ← Back to designs
+        </Link>
       </div>
     </main>
   );
 }
 
 function Admin() {
-  const [logged, setLogged] = useState(!!localStorage.getItem("adminToken"));
+  const [logged, setLogged] = useState(
+    !!localStorage.getItem("adminToken")
+  );
+
   const [designs, setDesigns] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ title: "", description: "", category: "Bridal", price: "", image: null });
 
-  useEffect(() => { if (logged) load(); }, [logged]);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    category: "Bridal",
+    price: "",
+    image: null
+  });
+
+  useEffect(() => {
+    if (logged) load();
+  }, [logged]);
 
   async function load() {
-    const { data } = await api.get("/designs");
-    setDesigns(data);
+    try {
+      const { data } = await api.get("/designs");
+      setDesigns(data);
+    } catch (error) {
+      console.error("Unable to load admin designs:", error);
+    }
   }
-
-  if (!logged) return <AdminLogin onLogin={() => setLogged(true)} />;
 
   function reset() {
     setEditing(null);
-    setForm({ title: "", description: "", category: "Bridal", price: "", image: null });
+    setForm({
+      title: "",
+      description: "",
+      category: "Bridal",
+      price: "",
+      image: null
+    });
   }
 
   function edit(d) {
     setEditing(d);
-    setForm({ title: d.title, description: d.description, category: d.category, price: d.price, image: null });
+
+    setForm({
+      title: d.title,
+      description: d.description,
+      category: d.category,
+      price: d.price,
+      image: null
+    });
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function save(e) {
     e.preventDefault();
-    const fd = new FormData();
-    Object.entries(form).forEach(([k, v]) => {
-      if (v !== null && v !== "") fd.append(k, v);
-    });
 
-    if (editing) await api.put(`/admin/designs/${editing.id}`, fd, { headers: adminHeaders() });
-    else await api.post("/admin/designs", fd, { headers: adminHeaders() });
+    try {
+      const fd = new FormData();
 
-    reset();
-    await load();
-    alert("Design saved successfully.");
+      Object.entries(form).forEach(([k, v]) => {
+        if (v !== null && v !== "") {
+          fd.append(k, v);
+        }
+      });
+
+      if (editing) {
+        await api.put(
+          `/admin/designs/${editing.id}`,
+          fd,
+          { headers: adminHeaders() }
+        );
+      } else {
+        await api.post(
+          "/admin/designs",
+          fd,
+          { headers: adminHeaders() }
+        );
+      }
+
+      reset();
+      await load();
+
+      alert("Design saved successfully.");
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Unable to save design. Please try again.");
+    }
   }
 
   async function remove(id) {
     if (!confirm("Delete this design?")) return;
-    await api.delete(`/admin/designs/${id}`, { headers: adminHeaders() });
-    load();
+
+    try {
+      await api.delete(`/admin/designs/${id}`, {
+        headers: adminHeaders()
+      });
+
+      await load();
+    } catch (error) {
+      alert("Unable to delete design.");
+    }
   }
 
   function logout() {
@@ -211,35 +357,100 @@ function Admin() {
     setLogged(false);
   }
 
+  if (!logged) {
+    return <AdminLogin onLogin={() => setLogged(true)} />;
+  }
+
   return (
     <main className="admin-page">
       <div className="admin-head">
-        <div><span className="eyebrow">ADMIN PANEL</span><h1>{editing ? "Edit Design" : "Add New Design"}</h1></div>
+        <div>
+          <span className="eyebrow">ADMIN PANEL</span>
+          <h1>{editing ? "Edit Design" : "Add New Design"}</h1>
+        </div>
+
         <button onClick={logout}>Logout</button>
       </div>
 
       <form className="admin-form" onSubmit={save}>
-        <input required placeholder="Design title" value={form.title} onChange={e => setForm({...form, title:e.target.value})} />
-        <textarea placeholder="Description" value={form.description} onChange={e => setForm({...form, description:e.target.value})} />
-        <select value={form.category} onChange={e => setForm({...form, category:e.target.value})}>
-          {categories.slice(1).map(c => <option key={c}>{c}</option>)}
+        <input
+          required
+          placeholder="Design title"
+          value={form.title}
+          onChange={e => setForm({ ...form, title: e.target.value })}
+        />
+
+        <textarea
+          placeholder="Description"
+          value={form.description}
+          onChange={e => setForm({ ...form, description: e.target.value })}
+        />
+
+        <select
+          value={form.category}
+          onChange={e => setForm({ ...form, category: e.target.value })}
+        >
+          {categories.slice(1).map(c => (
+            <option key={c}>{c}</option>
+          ))}
         </select>
-        <input required type="number" min="0" step="0.01" placeholder="Price ₹" value={form.price} onChange={e => setForm({...form, price:e.target.value})} />
-        <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e => setForm({...form, image:e.target.files[0] || null})} />
+
+        <input
+          required
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Price ₹"
+          value={form.price}
+          onChange={e => setForm({ ...form, price: e.target.value })}
+        />
+
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={e =>
+            setForm({ ...form, image: e.target.files[0] || null })
+          }
+        />
+
         <div>
-          <button className="primary-btn">{editing ? "Update Design" : "Add Design"}</button>
-          {editing && <button type="button" className="secondary-btn" onClick={reset}>Cancel</button>}
+          <button className="primary-btn">
+            {editing ? "Update Design" : "Add Design"}
+          </button>
+
+          {editing && (
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={reset}
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </form>
 
       <h2>Manage Designs</h2>
+
       <div className="admin-list">
         {designs.map(d => (
           <div className="admin-row" key={d.id}>
             <img src={d.image_url} alt="" />
-            <div><strong>{d.title}</strong><p>{d.category} · ₹{Number(d.price).toLocaleString("en-IN")}</p></div>
-            <button onClick={() => edit(d)}>Edit / Change Price</button>
-            <button className="danger" onClick={() => remove(d.id)}>Delete</button>
+
+            <div>
+              <strong>{d.title}</strong>
+              <p>
+                {d.category} · ₹{Number(d.price).toLocaleString("en-IN")}
+              </p>
+            </div>
+
+            <button onClick={() => edit(d)}>
+              Edit / Change Price
+            </button>
+
+            <button className="danger" onClick={() => remove(d.id)}>
+              Delete
+            </button>
           </div>
         ))}
       </div>
@@ -250,25 +461,46 @@ function Admin() {
 function AdminLogin({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   async function login(e) {
     e.preventDefault();
+
     try {
-      const { data } = await api.post("/admin/login", { email, password });
+      const { data } = await api.post("/admin/login", {
+        email,
+        password
+      });
+
       localStorage.setItem("adminToken", data.token);
       onLogin();
     } catch {
       alert("Invalid admin email or password.");
     }
   }
+
   return (
     <main className="login-page">
       <form className="login-card" onSubmit={login}>
         <span className="eyebrow">ADMIN ONLY</span>
         <h1>Admin Login</h1>
-        <input required type="email" placeholder="Admin email" value={email} onChange={e => setEmail(e.target.value)} />
-        <input required type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+
+        <input
+          required
+          type="email"
+          placeholder="Admin email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+
+        <input
+          required
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+
         <button className="primary-btn">Login</button>
-        <small>Demo: admin@example.com / admin123</small>
       </form>
     </main>
   );
