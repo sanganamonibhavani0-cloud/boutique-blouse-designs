@@ -5,3 +5,19 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 frontend/node_modules/
 frontend/dist/
+# Local databases and backups
+backend/*.db
+
+# Temporary migration and testing scripts
+backend/check_db.py
+backend/inspect_postgres.py
+backend/migrate_db.py
+backend/test_postgres.py
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
