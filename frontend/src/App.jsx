@@ -156,28 +156,42 @@ function DesignCard({ design }) {
     }
   }
 
+  // SHARE PHOTO ONLY
   async function share(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    const url = `${window.location.origin}/design/${design.slug}`;
-    const shareText = `${design.title}\n${url}`;
-
     try {
-      if (window.AndroidShare?.shareText) {
-        window.AndroidShare.shareText(shareText);
-      } else if (navigator.share) {
-        await navigator.share({
-          title: design.title,
-          text: design.title,
-          url
-        });
+      if (window.AndroidShare?.shareImage) {
+        window.AndroidShare.shareImage(
+          design.image_url,
+          design.title
+        );
+      } else if (navigator.share && navigator.canShare) {
+        const response = await fetch(design.image_url);
+        const blob = await response.blob();
+
+        const file = new File(
+          [blob],
+          `${design.title}.jpg`,
+          { type: blob.type || "image/jpeg" }
+        );
+
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: design.title
+          });
+        } else {
+          alert("Photo sharing is not supported.");
+        }
       } else {
-        alert("Sharing is not supported on this device.");
+        alert("Photo sharing is not supported on this device.");
       }
     } catch (error) {
       if (error.name !== "AbortError") {
-        alert("Sharing failed. Please try again.");
+        console.error("Photo sharing failed:", error);
+        alert("Unable to share photo. Please try again.");
       }
     }
   }
