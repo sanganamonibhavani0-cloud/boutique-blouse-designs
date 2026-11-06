@@ -127,35 +127,44 @@ function DesignCard({ design }) {
       alert("Unable to like this design.");
     }
   }
+  //download image
+  
+async function download(e) {
+  e.preventDefault();
+  e.stopPropagation();
 
-  async function download(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  try {
+    const response = await api.post(
+      `/designs/${design.id}/download`
+    );
 
-    try {
-      const response = await api.post(
-        `/designs/${design.id}/download`,
-        {},
-        { responseType: "blob" }
+    const imageUrl = response.data.image_url;
+
+    if (window.AndroidShare) {
+      window.AndroidShare.downloadImage(
+        imageUrl,
+        design.title
       );
-
-      const url = URL.createObjectURL(response.data);
+    } else {
       const a = document.createElement("a");
-
-      a.href = url;
+      a.href = imageUrl;
       a.download = `${design.title}.jpg`;
-
+      a.target = "_blank";
       document.body.appendChild(a);
       a.click();
       a.remove();
-
-      URL.revokeObjectURL(url);
-      setDownloads(prev => prev + 1);
-    } catch (error) {
-      alert("Download failed. Please try again.");
     }
-  }
 
+    setDownloads(response.data.downloads);
+
+  } catch (error) {
+    console.error("Download error:", error);
+    alert("Download failed. Please try again.");
+  }
+}
+
+
+  
   // SHARE PHOTO ONLY
   async function share(e) {
     e.preventDefault();
