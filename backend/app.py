@@ -1,5 +1,5 @@
 
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify
 import cloudinary
 import cloudinary.uploader
 from flask_cors import CORS
@@ -368,32 +368,22 @@ def like_design(design_id):
 
 @app.post("/api/designs/<int:design_id>/download")
 def download_design(design_id):
-
-    design = db.session.get(
-        Design, design_id
-    )
+    design = db.session.get(Design, design_id)
 
     if not design:
-
-        return jsonify({
-            "error": "Design not found"
-        }), 404
+        return jsonify({"error": "Design not found"}), 404
 
     if not design.image_filename:
+        return jsonify({"error": "Image not found"}), 404
 
-        return jsonify({
-            "error": "Image not found"
-        }), 404
-
-    design.downloads = (
-        design.downloads or 0
-    ) + 1
-
+    design.downloads = (design.downloads or 0) + 1
     db.session.commit()
 
-    return redirect(
-        design.image_filename
-    )
+    return jsonify({
+        "image_url": design.image_filename,
+        "downloads": design.downloads
+    }), 200
+
 
 # -----------------------------------
 # CREATE DESIGN
