@@ -148,6 +148,19 @@ input, textarea, select {
   background: #5b2938;
   color: #fff;
 }
+/* Reduce hero banner vertical height */
+.hero {
+  min-height: auto;
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+
+@media (max-width: 550px) {
+  .hero {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
 
 /* Product grid */
 .grid {
