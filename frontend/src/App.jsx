@@ -32,7 +32,7 @@ function Layout({ children }) {
     </>
   );
 }
-s
+
 function Home() {
   const [designs, setDesigns] = useState([]);
   const [search, setSearch] = useState("");
