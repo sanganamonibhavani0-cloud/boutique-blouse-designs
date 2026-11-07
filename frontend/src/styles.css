@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
 
 :root {
@@ -8,18 +9,29 @@
   text-rendering: optimizeLegibility;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html { scroll-behavior: smooth; }s
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
   min-width: 320px;
 }
 
-a { color: inherit; text-decoration: none; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
-button, input, textarea, select { font: inherit; }
+button, input, textarea, select {
+  font: inherit;
+}
+
+/* NAVBAR */
 
 .navbar {
   min-height: 76px;
@@ -47,7 +59,11 @@ nav {
   font-weight: 700;
 }
 
-nav a:hover { color: #9a5369; }
+nav a:hover {
+  color: #9a5369;
+}
+
+/* MAIN */
 
 main {
   max-width: 1250px;
@@ -55,43 +71,39 @@ main {
   padding: 35px 5%;
 }
 
+/* HERO BANNER */
+
 .hero {
-  min-height: 420px;
+  min-height: 0;
   display: grid;
   grid-template-columns: 1.25fr .75fr;
   align-items: center;
   border-radius: 28px;
-  padding: 60px;
+  padding: 38px 45px;
   overflow: hidden;
   background: radial-gradient(circle at 75% 35%, #f8dfe1, #f3e8e4 40%, #ead6d4);
 }
-/* Compact hero content on mobile */
-@media (max-width: 550px) {
-  .hero {
-    padding: 20px 18px;
-  }
 
-  .hero h1 {
-    font-size: 1.7rem;
-    line-height: 1.08;
-    margin-top: 10px;
-    margin-bottom: 12px;
-  }
-
-  .hero p {
-    font-size: 15px;
-    line-height: 1.4;
-    margin-top: 0;
-    margin-bottom: 16px;
-  }
-
-  .hero .eyebrow {
-    font-size: 11px;
-    letter-spacing: 2px;
-  }
+.hero h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 46px;
+  line-height: 1.1;
+  margin: 18px 0;
 }
 
-  
+.hero p {
+  max-width: 600px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #66585c;
+  margin: 0 0 20px;
+}
+
+.eyebrow {
+  letter-spacing: 3px;
+  font-size: 12px;
+  font-weight: 800;
+}
 
 .hero-art {
   font-size: 220px;
@@ -99,7 +111,11 @@ main {
   opacity: .25;
 }
 
-.primary-btn, .secondary-btn, button {
+/* BUTTONS */
+
+.primary-btn,
+.secondary-btn,
+button {
   border: 0;
   border-radius: 12px;
   padding: 12px 16px;
@@ -114,20 +130,27 @@ main {
   display: inline-block;
 }
 
-.primary-btn:hover { background: #76394d; }
+.primary-btn:hover {
+  background: #76394d;
+}
 
 .secondary-btn {
   background: #f2e4e5;
   display: inline-block;
 }
 
+/* SEARCH */
+
 .toolbar {
   display: flex;
   gap: 10px;
-  margin-top: 35px;
+  margin-top: 30px;
 }
 
-.toolbar input { flex: 1; min-width: 0; }
+.toolbar input {
+  flex: 1;
+  min-width: 0;
+}
 
 input, textarea, select {
   width: 100%;
@@ -136,6 +159,8 @@ input, textarea, select {
   border-radius: 12px;
   background: white;
 }
+
+/* CATEGORIES */
 
 .categories {
   display: flex;
@@ -153,21 +178,9 @@ input, textarea, select {
   background: #5b2938;
   color: #fff;
 }
-/* Reduce hero banner vertical height */
-.hero {
-  min-height: auto;
-  padding-top: 28px;
-  padding-bottom: 28px;
-}
 
-@media (max-width: 550px) {
-  .hero {
-    padding-top: 24px;
-    padding-bottom: 24px;
-  }
-}
+/* PRODUCT GRID */
 
-/* Product grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -197,7 +210,9 @@ input, textarea, select {
   background: #f4eded;
 }
 
-.card-body { padding: 15px; }
+.card-body {
+  padding: 15px;
+}
 
 .tag {
   font-size: 11px;
@@ -213,7 +228,8 @@ input, textarea, select {
   line-height: 1.3;
 }
 
-.price, .big-price {
+.price,
+.big-price {
   font-weight: 800;
   color: #5b2938;
   font-size: 21px;
@@ -233,14 +249,18 @@ input, textarea, select {
   color: #302329;
 }
 
-.actions button:hover { background: #ead6d9; }
+.actions button:hover {
+  background: #ead6d9;
+}
 
-.center, .empty {
+.center,
+.empty {
   text-align: center;
   padding: 70px 20px;
 }
 
-/* Product details */
+/* PRODUCT DETAILS */
+
 .details {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -265,7 +285,9 @@ input, textarea, select {
   margin: 20px 0;
 }
 
-.detail-stats { color: #75666a; }
+.detail-stats {
+  color: #75666a;
+}
 
 .detail-actions {
   display: flex;
@@ -280,10 +302,14 @@ input, textarea, select {
   padding: 13px 18px;
 }
 
-.detail-actions button:hover { background: #76394d; }
+.detail-actions button:hover {
+  background: #76394d;
+}
 
-/* Admin */
-.admin-page h1, .login-card h1 {
+/* ADMIN */
+
+.admin-page h1,
+.login-card h1 {
   font-family: "Playfair Display", serif;
 }
 
@@ -294,7 +320,8 @@ input, textarea, select {
   margin-bottom: 25px;
 }
 
-.admin-form, .login-card {
+.admin-form,
+.login-card {
   background: white;
   border: 1px solid #efdfdf;
   border-radius: 20px;
@@ -333,9 +360,19 @@ input, textarea, select {
   color: #8c2730;
 }
 
-.login-page { max-width: 500px; }
-.login-card { margin-top: 70px; }
-.login-card small { color: #777; }
+.login-page {
+  max-width: 500px;
+}
+
+.login-card {
+  margin-top: 70px;
+}
+
+.login-card small {
+  color: #777;
+}
+
+/* FOOTER */
 
 footer {
   text-align: center;
@@ -345,15 +382,21 @@ footer {
   margin-top: 45px;
 }
 
-/* Tablet */
+/* TABLET */
+
 @media (max-width: 850px) {
   .hero {
     grid-template-columns: 1fr;
-    padding: 40px;
+    padding: 32px;
   }
 
-  .hero h1 { font-size: 42px; }
-  .hero-art { display: none; }
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .hero-art {
+    display: none;
+  }
 
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -365,38 +408,75 @@ footer {
     gap: 25px;
   }
 
-  .admin-row { grid-template-columns: 60px 1fr; }
-  .admin-row button { grid-column: 2; }
+  .admin-row {
+    grid-template-columns: 60px 1fr;
+  }
+
+  .admin-row button {
+    grid-column: 2;
+  }
 }
 
-/* Mobile: two product cards side by side */
+/* MOBILE */
+
 @media (max-width: 550px) {
+
   .navbar {
-    min-height: 70px;
-    padding: 10px 4%;
+    min-height: 65px;
+    padding: 9px 4%;
     gap: 8px;
   }
 
-  .brand { font-size: 21px; }
+  .brand {
+    font-size: 21px;
+  }
 
   nav {
     gap: 12px;
     font-size: 14px;
   }
 
-  main { padding: 22px 4%; }
+  main {
+    padding: 20px 4%;
+  }
 
+  /* COMPACT HERO */
   .hero {
+    display: block;
     min-height: 0;
-    padding: 35px 25px;
+    padding: 18px 18px 20px;
     border-radius: 22px;
   }
 
-  .hero h1 { font-size: 35px; }
-  .hero p { font-size: 15px; }
+  .hero h1 {
+    font-size: 1.7rem;
+    line-height: 1.08;
+    margin: 10px 0 12px;
+  }
 
+  .hero p {
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0 0 14px;
+  }
+
+  .hero .eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .hero-art {
+    display: none;
+  }
+
+  .hero .primary-btn {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* SEARCH */
   .toolbar {
-    margin-top: 25px;
+    margin-top: 20px;
     gap: 7px;
   }
 
@@ -410,6 +490,7 @@ footer {
     font-size: 13px;
   }
 
+  /* CATEGORY */
   .categories {
     gap: 7px;
     margin: 15px 0 20px;
@@ -424,14 +505,23 @@ footer {
     padding: 10px 14px;
   }
 
+  /* TWO PRODUCT CARDS */
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
-  .card { border-radius: 13px; }
-  .card img { aspect-ratio: 3 / 4; }
-  .card-body { padding: 10px; }
+  .card {
+    border-radius: 13px;
+  }
+
+  .card img {
+    aspect-ratio: 3 / 4;
+  }
+
+  .card-body {
+    padding: 10px;
+  }
 
   .tag {
     font-size: 9px;
@@ -448,7 +538,9 @@ footer {
     margin: 8px 0;
   }
 
-  .actions { gap: 5px; }
+  .actions {
+    gap: 5px;
+  }
 
   .actions button {
     padding: 8px 7px;
@@ -456,27 +548,41 @@ footer {
     border-radius: 9px;
   }
 
+  /* DETAILS */
   .details {
     grid-template-columns: 1fr;
     gap: 20px;
   }
 
-  .details > img { max-height: 480px; }
-  .details h1 { font-size: 32px; }
-  .big-price { font-size: 27px; }
+  .details > img {
+    max-height: 480px;
+  }
+
+  .details h1 {
+    font-size: 32px;
+  }
+
+  .big-price {
+    font-size: 27px;
+  }
 
   .detail-actions button {
     font-size: 13px;
     padding: 11px 13px;
   }
 
-  .admin-form, .login-card { padding: 18px; }
+  /* ADMIN */
+  .admin-form,
+  .login-card {
+    padding: 18px;
+  }
 
   .admin-row {
     grid-template-columns: 55px 1fr;
     gap: 10px;
   }
 
+  /* FOOTER */
   footer {
     font-size: 12px;
     padding: 25px 12px;
