@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { api, adminHeaders } from "./api";
+import "./styles.css";
 
 const categories = [
   "All",
@@ -32,7 +32,7 @@ function Layout({ children }) {
     </>
   );
 }
-
+s
 function Home() {
   const [designs, setDesigns] = useState([]);
   const [search, setSearch] = useState("");
@@ -112,8 +112,8 @@ function Home() {
 }
 
 function DesignCard({ design }) {
-  const [likes, setLikes] = useState(design.likes);
-  const [downloads, setDownloads] = useState(design.downloads);
+  const [likes, setLikes] = useState(design.likes ?? 0);
+  const [downloads, setDownloads] = useState(design.downloads ?? 0);
   const navigate = useNavigate();
 
   async function like(e) {
@@ -124,65 +124,55 @@ function DesignCard({ design }) {
       const { data } = await api.post(`/designs/${design.id}/like`);
       setLikes(data.likes);
     } catch (error) {
+      console.error("Like failed:", error);
       alert("Unable to like this design.");
     }
   }
-  //download image
-  
-async function download(e) {
-  e.preventDefault();
-  e.stopPropagation();
 
-  try {
-    const response = await api.post(
-      `/designs/${design.id}/download`
-    );
+  async function download(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-    const imageUrl = response.data.image_url;
+    try {
+      const response = await api.post(`/designs/${design.id}/download`);
+      const imageUrl = response.data.image_url;
 
-    if (window.AndroidShare) {
-      window.AndroidShare.downloadImage(
-        imageUrl,
-        design.title
-      );
-    } else {
-      const a = document.createElement("a");
-      a.href = imageUrl;
-      a.download = `${design.title}.jpg`;
-      a.target = "_blank";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      if (!imageUrl) {
+        throw new Error("Image URL was not returned by the server.");
+      }
+
+      if (window.AndroidShare?.downloadImage) {
+        window.AndroidShare.downloadImage(imageUrl, design.title);
+      } else {
+        const a = document.createElement("a");
+        a.href = imageUrl;
+        a.download = `${design.title || "blouse-design"}.jpg`;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      setDownloads(response.data.downloads ?? downloads + 1);
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Download failed. Please try again.");
     }
-
-    setDownloads(response.data.downloads);
-
-  } catch (error) {
-    console.error("Download error:", error);
-    alert("Download failed. Please try again.");
   }
-}
 
-
-  
-  // SHARE PHOTO ONLY
   async function share(e) {
     e.preventDefault();
     e.stopPropagation();
 
     try {
       if (window.AndroidShare?.shareImage) {
-        window.AndroidShare.shareImage(
-          design.image_url,
-          design.title
-        );
+        window.AndroidShare.shareImage(design.image_url, design.title);
       } else if (navigator.share && navigator.canShare) {
         const response = await fetch(design.image_url);
         const blob = await response.blob();
-
         const file = new File(
           [blob],
-          `${design.title}.jpg`,
+          `${design.title || "blouse-design"}.jpg`,
           { type: blob.type || "image/jpeg" }
         );
 
@@ -210,7 +200,7 @@ async function download(e) {
       className="card"
       onClick={() => navigate(`/design/${design.slug}`)}
     >
-      <img src={design.image_url} alt={design.title} />
+      <img src={design.image_url} alt={design.title} loading="lazy" />
 
       <div className="card-body">
         <span className="tag">{design.category}</span>
@@ -221,7 +211,7 @@ async function download(e) {
         </p>
 
         <div className="actions">
-          <button onClick={like}>♥ {likes}</button>
+          <button onClick={like} aria-label="Like design">♥ {likes}</button>
           <button onClick={download}>↓ Download {downloads}</button>
           <button onClick={share}>↗ Share</button>
         </div>
@@ -240,6 +230,40 @@ function DesignDetails() {
       .catch(() => setDesign(false));
   }, [slug]);
 
+  async function shareDesign() {
+    if (!design) return;
+
+    try {
+      if (window.AndroidShare?.shareImage) {
+        window.AndroidShare.shareImage(design.image_url, design.title);
+      } else if (navigator.share && navigator.canShare) {
+        const response = await fetch(design.image_url);
+        const blob = await response.blob();
+        const file = new File(
+          [blob],
+          `${design.title || "blouse-design"}.jpg`,
+          { type: blob.type || "image/jpeg" }
+        );
+
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: design.title
+          });
+        } else {
+          alert("Photo sharing is not supported.");
+        }
+      } else {
+        alert("Photo sharing is not supported on this device.");
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Photo sharing failed:", error);
+        alert("Unable to share photo. Please try again.");
+      }
+    }
+  }
+
   if (design === null) {
     return <p className="center">Loading...</p>;
   }
@@ -252,7 +276,7 @@ function DesignDetails() {
     <main className="details">
       <img src={design.image_url} alt={design.title} />
 
-      <div>
+      <div className="details-info">
         <span className="tag">{design.category}</span>
         <h1>{design.title}</h1>
 
@@ -260,12 +284,20 @@ function DesignDetails() {
           ₹{Number(design.price).toLocaleString("en-IN")}
         </div>
 
-        <p>{design.description}</p>
-        <p>♥ {design.likes} likes · ↓ {design.downloads} downloads</p>
+        {design.description && <p>{design.description}</p>}
+        <p className="detail-stats">
+          ♥ {design.likes ?? 0} likes · ↓ {design.downloads ?? 0} downloads
+        </p>
 
-        <Link to="/" className="secondary-btn">
-          ← Back to designs
-        </Link>
+        <div className="detail-actions">
+          <button type="button" onClick={shareDesign}>
+            ↗ Share Design
+          </button>
+
+          <Link to="/" className="secondary-btn">
+            ← Back to designs
+          </Link>
+        </div>
       </div>
     </main>
   );
@@ -313,7 +345,6 @@ function Admin() {
 
   function edit(d) {
     setEditing(d);
-
     setForm({
       title: d.title,
       description: d.description,
@@ -321,7 +352,6 @@ function Admin() {
       price: d.price,
       image: null
     });
-
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -353,7 +383,6 @@ function Admin() {
 
       reset();
       await load();
-
       alert("Design saved successfully.");
     } catch (error) {
       console.error("Save failed:", error);
@@ -368,9 +397,9 @@ function Admin() {
       await api.delete(`/admin/designs/${id}`, {
         headers: adminHeaders()
       });
-
       await load();
     } catch (error) {
+      console.error("Delete failed:", error);
       alert("Unable to delete design.");
     }
   }
@@ -391,7 +420,6 @@ function Admin() {
           <span className="eyebrow">ADMIN PANEL</span>
           <h1>{editing ? "Edit Design" : "Add New Design"}</h1>
         </div>
-
         <button onClick={logout}>Logout</button>
       </div>
 
@@ -458,7 +486,7 @@ function Admin() {
       <div className="admin-list">
         {designs.map(d => (
           <div className="admin-row" key={d.id}>
-            <img src={d.image_url} alt="" />
+            <img src={d.image_url} alt={d.title} />
 
             <div>
               <strong>{d.title}</strong>
@@ -496,7 +524,8 @@ function AdminLogin({ onLogin }) {
 
       localStorage.setItem("adminToken", data.token);
       onLogin();
-    } catch {
+    } catch (error) {
+      console.error("Admin login failed:", error);
       alert("Invalid admin email or password.");
     }
   }
