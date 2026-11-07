@@ -65,11 +65,14 @@ main {
   overflow: hidden;
   background: radial-gradient(circle at 75% 35%, #f8dfe1, #f3e8e4 40%, #ead6d4);
 }
-
-.hero h1 {
-  font: 800 52px/1.08 "Playfair Display", serif;
-  max-width: 700px;
-  margin: 16px 0;
+/* Reduce hero title size on mobile */
+@media (max-width: 550px) {
+  .hero h1 {
+    font-size: 2.2rem;
+    line-height: 1.08;
+    margin-top: 14px;
+    margin-bottom: 18px;
+  }
 }
 
 .hero p {
