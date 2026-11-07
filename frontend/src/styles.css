@@ -588,3 +588,20 @@ footer {
     padding: 25px 12px;
   }
 }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.brand-logo {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+}
+
+.brand span {
+  font-family: "Playfair Display", serif;
+}

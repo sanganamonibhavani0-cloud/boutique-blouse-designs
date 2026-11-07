@@ -17,7 +17,16 @@ function Layout({ children }) {
   return (
     <>
       <header className="navbar">
-        <Link to="/" className="brand">🌸 Blouse Studio</Link>
+      <Link to="/" className="brand">
+        <img
+          src="/blouse-studio-logo.png"
+          alt="Blouse Studio"
+          className="brand-logo"
+        />
+        <span>Blouse Studio</span>
+     </Link>
+    
+        
         <nav>
           <Link to="/">Home</Link>
           <Link to="/admin">Admin</Link>
